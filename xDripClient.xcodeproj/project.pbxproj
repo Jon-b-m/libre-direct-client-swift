@@ -72,20 +72,6 @@
 			remoteGlobalIDString = 432B0E871CDFC3C50045347B;
 			remoteInfo = xDripClient;
 		};
-		4325E9D6210E714B00969CE5 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 432B0E7F1CDFC3C50045347B /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 43A8EC75210E653B00A81379;
-			remoteInfo = Cartfile;
-		};
-		4325E9D8210E715200969CE5 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 432B0E7F1CDFC3C50045347B /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 43A8EC75210E653B00A81379;
-			remoteInfo = Cartfile;
-		};
 		432B0E941CDFC3C50045347B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 432B0E7F1CDFC3C50045347B /* Project object */;
@@ -367,7 +353,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				4325E9D7210E714B00969CE5 /* PBXTargetDependency */,
 			);
 			name = xDripClient;
 			productName = SpikeClient;
@@ -404,7 +389,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				4325E9D9210E715200969CE5 /* PBXTargetDependency */,
 			);
 			name = xDripClientUI;
 			productName = SpikeClientUI;
@@ -591,16 +575,6 @@
 			isa = PBXTargetDependency;
 			target = 432B0E871CDFC3C50045347B /* xDripClient */;
 			targetProxy = 0A9FF70B243B791E007A7DB3 /* PBXContainerItemProxy */;
-		};
-		4325E9D7210E714B00969CE5 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 43A8EC75210E653B00A81379 /* Cartfile */;
-			targetProxy = 4325E9D6210E714B00969CE5 /* PBXContainerItemProxy */;
-		};
-		4325E9D9210E715200969CE5 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 43A8EC75210E653B00A81379 /* Cartfile */;
-			targetProxy = 4325E9D8210E715200969CE5 /* PBXContainerItemProxy */;
 		};
 		432B0E951CDFC3C50045347B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
