@@ -15,6 +15,8 @@ public class xDripClientManager: CGMManager {
 
     public init() {
         client = xDripClient()
+        updateTimer = DispatchTimer(timeInterval: 10, queue: processQueue)
+        scheduleUpdateTimer()
     }
 
     required convenience public init?(rawState: CGMManager.RawStateValue) {
@@ -60,6 +62,8 @@ public class xDripClientManager: CGMManager {
     }
 
     public let managedDataInterval: TimeInterval? = nil
+    
+    private let processQueue = DispatchQueue(label: "xDripClientManager.processQueue")
 
     public private(set) var latestBackfill: Glucose?
     
@@ -72,42 +76,70 @@ public class xDripClientManager: CGMManager {
 
     public func fetchNewDataIfNeeded(_ completion: @escaping (CGMResult) -> Void) {
         guard let manager = client else {
-            completion(.noData)
+            delegateQueue.async {
+                completion(.noData)
+            }
             return
         }
 
+        
         // If our last glucose was less than 4.5 minutes ago, don't fetch.
-        if let latestGlucose = latestBackfill, latestGlucose.startDate.timeIntervalSinceNow > -TimeInterval(minutes: 4) {
-            completion(.noData)
+        if let latestGlucose = latestBackfill, latestGlucose.startDate.timeIntervalSinceNow > -TimeInterval(minutes: 4.5) {
+            delegateQueue.async {
+                completion(.noData)
+            }
             return
         }
+        
+        
+        
+        
+        processQueue.async {
+        
+            manager.fetchLast(6) { (error, glucose) in
+                if let error = error {
+                    
+                    self.delegateQueue.async {
+                        completion(.error(error))
+                    }
+                    return
+                }
+                guard let glucose = glucose else {
+                    self.delegateQueue.async {
+                        completion(.noData)
+                    }
+                    return
+                }
 
-        manager.fetchLast(6) { (error, glucose) in
-            if let error = error {
-                completion(.error(error))
-                return
+                // Ignore glucose values that are up to a minute newer than our previous value, to account for possible time shifting in Share data
+                let startDate = self.delegate.call { (delegate) -> Date? in
+                    return delegate?.startDateToFilterNewData(for: self)?.addingTimeInterval(TimeInterval(minutes: 1))
+                }
+                
+                
+                let newGlucose = glucose.filterDateRange(startDate, nil)
+                
+                let newSamples = newGlucose.filter({ $0.isStateValid }).map {
+                    return NewGlucoseSample(date: $0.startDate, quantity: $0.quantity, isDisplayOnly: false, syncIdentifier: "\(Int($0.startDate.timeIntervalSince1970))", device: self.device)
+                }
+                
+                
+              
+                
+                self.latestBackfill = newGlucose.first
+                
+                
+                self.delegateQueue.async {
+                    guard !newSamples.isEmpty else {
+                        completion(.noData)
+                        return
+                    }
+                    completion(.newData(newSamples))
+                }
+                
+                
             }
-            guard let glucose = glucose else {
-                completion(.noData)
-                return
-            }
-
-            // Ignore glucose values that are up to a minute newer than our previous value, to account for possible time shifting in Share data
-            let startDate = self.cgmManagerDelegate?.startDateToFilterNewData(for: self)?.addingTimeInterval(TimeInterval(minutes: 1))
             
-            let newGlucose = glucose.filterDateRange(startDate, nil)
-            
-            let newSamples = newGlucose.filter({ $0.isStateValid }).map {
-                return NewGlucoseSample(date: $0.startDate, quantity: $0.quantity, isDisplayOnly: false, syncIdentifier: "\(Int($0.startDate.timeIntervalSince1970))", device: self.device)
-            }
-            
-            self.latestBackfill = newGlucose.first
-            
-            if newSamples.count > 0 {
-                completion(.newData(newSamples))
-            } else {
-                completion(.noData)
-            }
         }
     }
 
@@ -132,5 +164,21 @@ public class xDripClientManager: CGMManager {
             "latestCollector: \(String(describing: latestCollector))",
             ""
         ].joined(separator: "\n")
+    }
+    
+    private let updateTimer: DispatchTimer
+
+    private func scheduleUpdateTimer() {
+        updateTimer.suspend()
+        updateTimer.eventHandler = { [weak self] in
+            guard let self = self else { return }
+            self.fetchNewDataIfNeeded { result in
+                guard case .newData = result else { return }
+                self.delegate.notify { delegate in
+                    delegate?.cgmManager(self, didUpdateWith: result)
+                }
+            }
+        }
+        updateTimer.resume()
     }
 }
