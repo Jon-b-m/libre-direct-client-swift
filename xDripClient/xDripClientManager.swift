@@ -9,6 +9,7 @@ import LoopKit
 import HealthKit
 
 
+
 public class xDripClientManager: CGMManager {
     
     public static var managerIdentifier = "xDripClient"
@@ -56,6 +57,8 @@ public class xDripClientManager: CGMManager {
     public let providesBLEHeartbeat = false
 
     public let shouldSyncToRemoteService = true
+    
+    private var isFetching = false
 
     public var sensorState: SensorDisplayable? {
         return latestBackfill
@@ -74,8 +77,13 @@ public class xDripClientManager: CGMManager {
         return nil
     }
 
+    
+    
+       
+    
     public func fetchNewDataIfNeeded(_ completion: @escaping (CGMResult) -> Void) {
-        guard let manager = client else {
+        
+        guard let manager = client, !isFetching else {
             delegateQueue.async {
                 completion(.noData)
             }
@@ -95,8 +103,10 @@ public class xDripClientManager: CGMManager {
         
         
         processQueue.async {
+            
+            self.isFetching = true
         
-            manager.fetchLast(6) { (error, glucose) in
+            manager.fetchLast(1) { (error, glucose) in
                 if let error = error {
                     
                     self.delegateQueue.async {
@@ -132,9 +142,11 @@ public class xDripClientManager: CGMManager {
                 self.delegateQueue.async {
                     guard !newSamples.isEmpty else {
                         completion(.noData)
+                        self.isFetching = false
                         return
                     }
                     completion(.newData(newSamples))
+                    self.isFetching = false
                 }
                 
                 
