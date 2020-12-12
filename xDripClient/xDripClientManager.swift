@@ -111,12 +111,14 @@ public class xDripClientManager: CGMManager {
                     
                     self.delegateQueue.async {
                         completion(.error(error))
+                        self.isFetching = false
                     }
                     return
                 }
                 guard let glucose = glucose else {
                     self.delegateQueue.async {
                         completion(.noData)
+                        self.isFetching = false
                     }
                     return
                 }
