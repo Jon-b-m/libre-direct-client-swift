@@ -110,7 +110,7 @@ public class xDripClientManager: CGMManager {
                 if let error = error {
                     
                     self.delegateQueue.async {
-                        completion(.error(error))
+                        completion(.noData)
                         self.isFetching = false
                     }
                     return
