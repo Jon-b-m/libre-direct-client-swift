@@ -7,6 +7,7 @@
 
 import LoopKit
 import HealthKit
+import Combine
 
 
 
@@ -56,9 +57,11 @@ public class xDripClientManager: CGMManager {
     
     public let providesBLEHeartbeat = false
 
-    public let shouldSyncToRemoteService = true
+    public let shouldSyncToRemoteService = false
     
     private var isFetching = false
+    
+    private var requestReceiver: Cancellable?
 
     public var sensorState: SensorDisplayable? {
         return latestBackfill
@@ -83,46 +86,53 @@ public class xDripClientManager: CGMManager {
     
     public func fetchNewDataIfNeeded(_ completion: @escaping (CGMResult) -> Void) {
         
-        guard let manager = client, !isFetching else {
-            delegateQueue.async {
-                completion(.noData)
-            }
-            return
-        }
-
-        
-        // If our last glucose was less than 4.5 minutes ago, don't fetch.
-        if let latestGlucose = latestBackfill, latestGlucose.startDate.timeIntervalSinceNow > -TimeInterval(minutes: 4.5) {
-            delegateQueue.async {
-                completion(.noData)
-            }
-            return
-        }
-        
-        
         
         
         processQueue.async {
             
-            self.isFetching = true
-        
-            manager.fetchLast(1) { (error, glucose) in
-                if let error = error {
-                    
-                    self.delegateQueue.async {
-                        completion(.noData)
-                        self.isFetching = false
-                    }
-                    return
+            
+            guard let manager = self.client, !self.isFetching else {
+                self.delegateQueue.async {
+                    completion(.noData)
                 }
-                guard let glucose = glucose else {
+                return
+            }
+
+                   
+            
+            // If our last glucose was less than 4.5 minutes ago, don't fetch.
+            if let latestGlucose = self.latestBackfill, latestGlucose.startDate.timeIntervalSinceNow > -TimeInterval(minutes: 4.5) {
+                self.delegateQueue.async {
+                    completion(.noData)
+                }
+                return
+            }
+            
+            
+            self.isFetching = true
+            self.requestReceiver = manager.fetchLast(1)
+            .sink(receiveCompletion: { finish in
+                switch finish {
+                case .finished: break
+                case let .failure(error):
+                    self.delegateQueue.async {
+                        completion(.error(error))
+                    }
+                }
+                self.isFetching = false
+            }, receiveValue: { [weak self] glucose in
+                guard let self = self else { return }
+                guard !glucose.isEmpty else {
                     self.delegateQueue.async {
                         completion(.noData)
-                        self.isFetching = false
                     }
                     return
                 }
 
+                
+
+                
+                
                 // Ignore glucose values that are up to a minute newer than our previous value, to account for possible time shifting in Share data
                 let startDate = self.delegate.call { (delegate) -> Date? in
                     return delegate?.startDateToFilterNewData(for: self)?.addingTimeInterval(TimeInterval(minutes: 1))
@@ -141,21 +151,24 @@ public class xDripClientManager: CGMManager {
                 self.latestBackfill = newGlucose.first
                 
                 
+                
+                                           
                 self.delegateQueue.async {
                     guard !newSamples.isEmpty else {
                         completion(.noData)
-                        self.isFetching = false
                         return
                     }
                     completion(.newData(newSamples))
-                    self.isFetching = false
                 }
-                
-                
-            }
-            
+            })
         }
+
+
     }
+    
+    
+    
+    
 
     public var device: HKDevice? {
         

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Combine
 
 public enum ClientError: Error {
     case fetchError
@@ -14,7 +15,6 @@ public enum ClientError: Error {
     case dateError
 }
 
-private let maxAttempts = 2
 
 public class xDripClient {
     
@@ -24,24 +24,37 @@ public class xDripClient {
         shared = UserDefaults.init(suiteName: group)
     }
     
-    public func fetchLast(_ n: Int, callback: @escaping (ClientError?, [Glucose]?) -> Void) {
-        fetchLastWithRetries(n, remaining: maxAttempts, callback: callback)
+    
+    
+    
+    
+    
+    func fetchLast(_ n: Int) -> AnyPublisher<[Glucose], Swift.Error> {
+        
+        
+        shared.publisher
+        .retry(2)
+        .tryMap { try self.fetchLastBGs(n, $0) }
+        .map { $0.filter { $0.isStateValid } }
+        .eraseToAnyPublisher()
+        
     }
-
-    private func fetchLastWithRetries(_ n: Int, remaining: Int, callback: @escaping (ClientError?, [Glucose]?) -> Void) {
-        do {
-            guard let sharedData = shared?.data(forKey: "latestReadings") else {
+    
+       
+    
+    private func fetchLastBGs(_ n: Int, _ sharedParm: UserDefaults? ) throws -> Array<Glucose> {
+        
+        do
+        {
+            guard let sharedData = sharedParm?.data(forKey: "latestReadings") else {
                 throw ClientError.fetchError
             }
         
             let decoded = try? JSONSerialization.jsonObject(with: sharedData, options: [])
             guard let sgvs = decoded as? Array<AnyObject> else {
-                if remaining > 0 {
-                    return self.fetchLastWithRetries(n, remaining: remaining - 1, callback: callback)
-                } else {
                     throw ClientError.dataError(reason: "Failed to decode SGVs as array from recieved data.")
-                }
             }
+        
 
             var transformed: Array<Glucose> = []
             for sgv in sgvs.prefix(n) {
@@ -63,11 +76,12 @@ public class xDripClient {
                 }
             }
             
-            callback(nil, transformed)
+            return transformed
+            
         } catch let error as ClientError {
-            callback(error, nil)
+            throw error
         } catch {
-            callback(.fetchError, nil)
+            throw ClientError.fetchError
         }
     }
 
