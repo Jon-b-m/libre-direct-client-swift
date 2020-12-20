@@ -11,7 +11,7 @@ import HealthKit
 import LoopKit
 
 public struct Glucose {
-    public let glucose: UInt16
+    public var glucose: UInt16
     public let trend: UInt8
     public let timestamp: Date
     public let collector: String?

@@ -36,6 +36,9 @@
 		0A9FF713243B7A05007A7DB3 /* LoopKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43A8EC7B210E661400A81379 /* LoopKit.framework */; };
 		0A9FF714243B7A05007A7DB3 /* LoopKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 43A8EC7B210E661400A81379 /* LoopKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		27C335B82165667300CF0868 /* xDripClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C418AE1CE0488900405B6A /* xDripClient.swift */; };
+		2C2B10FF258A012E00F0764A /* KalmanFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2B10FC258A012E00F0764A /* KalmanFilter.swift */; };
+		2C2B1100258A012E00F0764A /* KalmanFilterType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2B10FD258A012E00F0764A /* KalmanFilterType.swift */; };
+		2C2B1101258A012E00F0764A /* DoubleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2B10FE258A012E00F0764A /* DoubleExtension.swift */; };
 		2C3A54D8258420740035CE41 /* DispatchTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C3A54D7258420740035CE41 /* DispatchTimer.swift */; };
 		4325E9CF210E6A0A00969CE5 /* HKUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4325E9CE210E6A0A00969CE5 /* HKUnit.swift */; };
 		4325E9D1210E6A3D00969CE5 /* TimeInterval.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4325E9D0210E6A3D00969CE5 /* TimeInterval.swift */; };
@@ -108,6 +111,9 @@
 		0A9FF700243B78D5007A7DB3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0A9FF703243B78D5007A7DB3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0A9FF705243B78D5007A7DB3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2C2B10FC258A012E00F0764A /* KalmanFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KalmanFilter.swift; sourceTree = "<group>"; };
+		2C2B10FD258A012E00F0764A /* KalmanFilterType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KalmanFilterType.swift; sourceTree = "<group>"; };
+		2C2B10FE258A012E00F0764A /* DoubleExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DoubleExtension.swift; sourceTree = "<group>"; };
 		2C3A54D7258420740035CE41 /* DispatchTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DispatchTimer.swift; sourceTree = "<group>"; };
 		2ED9938D23B8E6D900EFE74B /* da-DK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "da-DK"; path = "da-DK.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		2ED9938E23B8E6D900EFE74B /* da-DK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "da-DK"; path = "da-DK.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -223,6 +229,16 @@
 			path = TestApp;
 			sourceTree = "<group>";
 		};
+		2C2B10FB258A012E00F0764A /* KalmanFilter */ = {
+			isa = PBXGroup;
+			children = (
+				2C2B10FC258A012E00F0764A /* KalmanFilter.swift */,
+				2C2B10FD258A012E00F0764A /* KalmanFilterType.swift */,
+				2C2B10FE258A012E00F0764A /* DoubleExtension.swift */,
+			);
+			path = KalmanFilter;
+			sourceTree = "<group>";
+		};
 		432B0E7E1CDFC3C50045347B = {
 			isa = PBXGroup;
 			children = (
@@ -250,6 +266,7 @@
 		432B0E8A1CDFC3C50045347B /* xDripClient */ = {
 			isa = PBXGroup;
 			children = (
+				2C2B10FB258A012E00F0764A /* KalmanFilter */,
 				43C418AE1CE0488900405B6A /* xDripClient.swift */,
 				432B0E8B1CDFC3C50045347B /* xDripClient.h */,
 				43AB5125213315D300B3D58D /* Localizable.strings */,
@@ -537,13 +554,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2C2B1101258A012E00F0764A /* DoubleExtension.swift in Sources */,
 				4325E9CF210E6A0A00969CE5 /* HKUnit.swift in Sources */,
 				4325E9D1210E6A3D00969CE5 /* TimeInterval.swift in Sources */,
 				27C335B82165667300CF0868 /* xDripClient.swift in Sources */,
 				43A8EC9D210E68CE00A81379 /* xDripClientManager.swift in Sources */,
 				2C3A54D8258420740035CE41 /* DispatchTimer.swift in Sources */,
+				2C2B1100258A012E00F0764A /* KalmanFilterType.swift in Sources */,
 				43AB51362133177800B3D58D /* LocalizedString.swift in Sources */,
 				43A8EC9B210E68BA00A81379 /* Glucose+GlucoseKit.swift in Sources */,
+				2C2B10FF258A012E00F0764A /* KalmanFilter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

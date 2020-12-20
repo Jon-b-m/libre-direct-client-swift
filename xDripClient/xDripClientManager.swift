@@ -20,6 +20,12 @@ public class xDripClientManager: CGMManager {
         updateTimer = DispatchTimer(timeInterval: 10, queue: processQueue)
         scheduleUpdateTimer()
     }
+    
+    private enum Config {
+        static let filterNoise = 2.5
+    }
+    
+    public var useFilter = true
 
     required convenience public init?(rawState: CGMManager.RawStateValue) {
         self.init()
@@ -57,7 +63,7 @@ public class xDripClientManager: CGMManager {
     
     public let providesBLEHeartbeat = false
 
-    public let shouldSyncToRemoteService = false
+    public let shouldSyncToRemoteService = true
     
     private var isFetching = false
     
@@ -110,7 +116,7 @@ public class xDripClientManager: CGMManager {
             
             
             self.isFetching = true
-            self.requestReceiver = manager.fetchLast(1)
+            self.requestReceiver = manager.fetchLast(12)
             .sink(receiveCompletion: { finish in
                 switch finish {
                 case .finished: break
@@ -131,7 +137,20 @@ public class xDripClientManager: CGMManager {
 
                 
 
-                
+                var filteredGlucose = glucose
+                if self.useFilter {
+                    var filter = KalmanFilter(stateEstimatePrior: Double(glucose.last!.glucose), errorCovariancePrior: Config.filterNoise)
+                    filteredGlucose.removeAll()
+                    for var item in glucose.reversed() {
+                        let prediction = filter.predict(stateTransitionModel: 1, controlInputModel: 0, controlVector: 0, covarianceOfProcessNoise: Config.filterNoise)
+                        let update = prediction.update(measurement: Double(item.glucose), observationModel: 1, covarienceOfObservationNoise: Config.filterNoise)
+                        filter = update
+                        item.glucose = UInt16(Int(filter.stateEstimatePrior.rounded()))
+                        filteredGlucose.append(item)
+                    }
+                    filteredGlucose = filteredGlucose.reversed()
+                }
+
                 
                 // Ignore glucose values that are up to a minute newer than our previous value, to account for possible time shifting in Share data
                 let startDate = self.delegate.call { (delegate) -> Date? in
@@ -139,7 +158,7 @@ public class xDripClientManager: CGMManager {
                 }
                 
                 
-                let newGlucose = glucose.filterDateRange(startDate, nil)
+                let newGlucose = filteredGlucose.filterDateRange(startDate, nil)
                 
                 let newSamples = newGlucose.filter({ $0.isStateValid }).map {
                     return NewGlucoseSample(date: $0.startDate, quantity: $0.quantity, isDisplayOnly: false, syncIdentifier: "\(Int($0.startDate.timeIntervalSince1970))", device: self.device)
