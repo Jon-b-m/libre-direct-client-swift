@@ -145,7 +145,16 @@ public class xDripClientManager: CGMManager {
                         let prediction = filter.predict(stateTransitionModel: 1, controlInputModel: 0, controlVector: 0, covarianceOfProcessNoise: Config.filterNoise)
                         let update = prediction.update(measurement: Double(item.glucose), observationModel: 1, covarienceOfObservationNoise: Config.filterNoise)
                         filter = update
-                        item.glucose = UInt16(Int(filter.stateEstimatePrior.rounded()))
+                        let signed_glucose = Int(filter.stateEstimatePrior.rounded())
+                        
+                        guard (signed_glucose > 0) else {
+                            self.delegateQueue.async {
+                                completion(.noData)
+                            }
+                            return
+                        }
+                        
+                        item.glucose = UInt16(signed_glucose)
                         filteredGlucose.append(item)
                     }
                     filteredGlucose = filteredGlucose.reversed()

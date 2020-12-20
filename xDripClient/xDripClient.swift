@@ -65,6 +65,11 @@ public class xDripClient {
                 }
                 
                 if let glucose = sgv["Value"] as? Int, let trend = sgv["Trend"] as? Int, let dt = sgv["DT"] as? String {
+                    
+                    guard (glucose > 0) else {
+                        throw ClientError.dataError(reason: "Negative glucose value.")
+                    }
+                    
                     transformed.append(Glucose(
                         glucose: UInt16(glucose),
                         trend: UInt8(trend),
