@@ -106,8 +106,8 @@ public class xDripClientManager: CGMManager {
 
                    
             
-            // If our last glucose was less than 4.5 minutes ago, don't fetch.
-            if let latestGlucose = self.latestBackfill, latestGlucose.startDate.timeIntervalSinceNow > -TimeInterval(minutes: 4.5) {
+            // If our last glucose was less than 0.5 minutes ago, don't fetch.
+            if let latestGlucose = self.latestBackfill, latestGlucose.startDate.timeIntervalSinceNow > -TimeInterval(minutes: 0.5) {
                 self.delegateQueue.async {
                     completion(.noData)
                 }
@@ -116,7 +116,7 @@ public class xDripClientManager: CGMManager {
             
             
             self.isFetching = true
-            self.requestReceiver = manager.fetchLast(12)
+            self.requestReceiver = manager.fetchLast(60)
             .sink(receiveCompletion: { finish in
                 switch finish {
                 case .finished: break
@@ -136,12 +136,17 @@ public class xDripClientManager: CGMManager {
                 }
 
                 
-
-                var filteredGlucose = glucose
+                // Ignore glucose readings that are more than 65 minutes old
+                let last_65_min_glucose = glucose.filterDateRange( Date( timeInterval: -TimeInterval(minutes: 65), since: Date() ), nil )
+                
+                
+                
+                
+                var filteredGlucose = last_65_min_glucose
                 if self.useFilter {
-                    var filter = KalmanFilter(stateEstimatePrior: Double(glucose.last!.glucose), errorCovariancePrior: Config.filterNoise)
+                    var filter = KalmanFilter(stateEstimatePrior: Double(last_65_min_glucose.last!.glucose), errorCovariancePrior: Config.filterNoise)
                     filteredGlucose.removeAll()
-                    for var item in glucose.reversed() {
+                    for var item in last_65_min_glucose.reversed() {
                         let prediction = filter.predict(stateTransitionModel: 1, controlInputModel: 0, controlVector: 0, covarianceOfProcessNoise: Config.filterNoise)
                         let update = prediction.update(measurement: Double(item.glucose), observationModel: 1, covarienceOfObservationNoise: Config.filterNoise)
                         filter = update
@@ -161,12 +166,12 @@ public class xDripClientManager: CGMManager {
                 }
 
                 
-                // Ignore glucose values that are up to a minute newer than our previous value, to account for possible time shifting in Share data
                 let startDate = self.delegate.call { (delegate) -> Date? in
-                    return delegate?.startDateToFilterNewData(for: self)?.addingTimeInterval(TimeInterval(minutes: 1))
+                    return delegate?.startDateToFilterNewData(for: self)
                 }
                 
                 
+                                
                 let newGlucose = filteredGlucose.filterDateRange(startDate, nil)
                 
                 let newSamples = newGlucose.filter({ $0.isStateValid }).map {

@@ -70,12 +70,17 @@ public class xDripClient {
                         throw ClientError.dataError(reason: "Negative glucose value.")
                     }
                     
+                    // only add glucose readings in a valid range - skip unrealistically low or high readings
+                    if ( ( glucose >= 39 ) && ( glucose <= 500 ) ) {
+                    
                     transformed.append(Glucose(
                         glucose: UInt16(glucose),
                         trend: UInt8(trend),
                         timestamp: try self.parseDate(dt),
                         collector: collector
                     ))
+                        
+                    }
                 } else {
                     throw ClientError.dataError(reason: "Failed to decode an SGV record.")
                 }
