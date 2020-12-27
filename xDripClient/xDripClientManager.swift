@@ -152,7 +152,9 @@ public class xDripClientManager: CGMManager {
                         filter = update
                         let signed_glucose = Int(filter.stateEstimatePrior.rounded())
                         
-                        guard (signed_glucose > 0) else {
+                        // I don't think that the Kalman filter should ever produce BG values outside of the valid range - just the be on the safe side
+                        // this does also prevent negative glucose values from being cast to UInt16
+                        guard ( ( ( signed_glucose >= 39 ) && ( signed_glucose <= 500 ) ) ) else {
                             self.delegateQueue.async {
                                 completion(.noData)
                             }

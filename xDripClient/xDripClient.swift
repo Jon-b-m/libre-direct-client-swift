@@ -66,12 +66,10 @@ public class xDripClient {
                 
                 if let glucose = sgv["Value"] as? Int, let trend = sgv["Trend"] as? Int, let dt = sgv["DT"] as? String {
                     
-                    guard (glucose > 0) else {
-                        throw ClientError.dataError(reason: "Negative glucose value.")
-                    }
-                    
+                          
                     // only add glucose readings in a valid range - skip unrealistically low or high readings
-                    if ( ( glucose >= 39 ) && ( glucose <= 500 ) ) {
+                    // this does also prevent negative glucose values from being cast to UInt16
+                    if ( ( ( glucose >= 39 ) && ( glucose <= 500 ) ) ) {
                     
                     transformed.append(Glucose(
                         glucose: UInt16(glucose),
