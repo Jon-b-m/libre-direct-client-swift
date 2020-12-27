@@ -38,7 +38,7 @@ extension Glucose: SensorDisplayable {
     }
 
     public var isLocal: Bool {
-        return false
+        return true
     }
 }
 
