@@ -176,6 +176,7 @@ public class xDripClientManager: CGMManager {
                 else {
                     startDate = self.delegate.call { (delegate) -> Date? in
                         return delegate?.startDateToFilterNewData(for: self)
+                    }
                 }
                 
                 
