@@ -173,6 +173,10 @@ public class xDripClientManager: CGMManager {
                 if let latestGlucose = self.latestBackfill {
                     startDate = latestGlucose.startDate
                 }
+                else {
+                    startDate = self.delegate.call { (delegate) -> Date? in
+                        return delegate?.startDateToFilterNewData(for: self)
+                }
                 
                 
                              
