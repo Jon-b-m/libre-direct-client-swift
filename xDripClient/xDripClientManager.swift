@@ -140,6 +140,12 @@ public class xDripClientManager: CGMManager {
                 let last_65_min_glucose = glucose.filterDateRange( Date( timeInterval: -TimeInterval(minutes: 65), since: Date() ), nil )
                 
                 
+                guard !last_65_min_glucose.isEmpty else {
+                    self.delegateQueue.async {
+                        completion(.noData)
+                    }
+                    return
+                }
                 
                 
                 var filteredGlucose = last_65_min_glucose
