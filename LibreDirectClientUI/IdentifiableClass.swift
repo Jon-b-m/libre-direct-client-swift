@@ -9,10 +9,11 @@
 import Foundation
 import UIKit
 
+// MARK: - IdentifiableClass
+
 protocol IdentifiableClass: class {
     static var className: String { get }
 }
-
 
 extension IdentifiableClass {
     static var className: String {
@@ -20,5 +21,6 @@ extension IdentifiableClass {
     }
 }
 
+// MARK: - UITableViewCell + IdentifiableClass
 
-extension UITableViewCell: IdentifiableClass { }
+extension UITableViewCell: IdentifiableClass {}

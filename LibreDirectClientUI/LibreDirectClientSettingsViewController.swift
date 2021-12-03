@@ -1,26 +1,22 @@
 //
-//  xDripClientSettingsViewController.swift
+//  LibreDirectClientSettingsViewController.swift
 //  Loop
 //
 //  Copyright © 2018 LoopKit Authors. All rights reserved.
 //
 
-import UIKit
 import HealthKit
+import LibreDirectClient
 import LoopKit
 import LoopKitUI
-import xDripClient
+import UIKit
 
+// MARK: - LibreDirectClientSettingsViewController
 
-public class xDripClientSettingsViewController: UITableViewController {
-    
-    public let cgmManager: xDripClientManager
-    
-    public let glucoseUnit: HKUnit
-    
-    public let allowsDeletion: Bool
-    
-    public init(cgmManager: xDripClientManager, glucoseUnit: HKUnit, allowsDeletion: Bool) {
+public class LibreDirectClientSettingsViewController: UITableViewController {
+    // MARK: Lifecycle
+
+    public init(cgmManager: LibreDirectClientManager, glucoseUnit: HKUnit, allowsDeletion: Bool) {
         self.cgmManager = cgmManager
         self.glucoseUnit = glucoseUnit
         self.allowsDeletion = allowsDeletion
@@ -28,10 +24,19 @@ public class xDripClientSettingsViewController: UITableViewController {
         super.init(style: .grouped)
     }
     
-    required public init?(coder aDecoder: NSCoder) {
+    @available(*, unavailable)
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    // MARK: Public
+
+    public let cgmManager: LibreDirectClientManager
     
+    public let glucoseUnit: HKUnit
+    
+    public let allowsDeletion: Bool
+
     override public func viewDidLoad() {
         super.viewDidLoad()
         
@@ -47,34 +52,11 @@ public class xDripClientSettingsViewController: UITableViewController {
         tableView.register(TextButtonTableViewCell.self, forCellReuseIdentifier: TextButtonTableViewCell.className)
         
         let button = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneTapped(_:)))
-        self.navigationItem.setRightBarButton(button, animated: false)
-    }
-    
-    @objc func doneTapped(_ sender: Any) {
-        complete()
-    }
-    
-    private func complete() {
-        if let nav = navigationController as? SettingsNavigationViewController {
-            nav.notifyComplete()
-        }
-    }
-    
-    // MARK: - UITableViewDataSource
-    
-    private enum Section: Int, CaseIterable {
-        case latestReading
-        case delete
+        navigationItem.setRightBarButton(button, animated: false)
     }
     
     override public func numberOfSections(in tableView: UITableView) -> Int {
         return allowsDeletion ? Section.allCases.count : Section.allCases.count - 1
-    }
-    
-    private enum LatestReadingRow: Int, CaseIterable {
-        case glucose
-        case date
-        case trend
     }
     
     override public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -86,21 +68,7 @@ public class xDripClientSettingsViewController: UITableViewController {
         }
     }
     
-    private lazy var glucoseFormatter: QuantityFormatter = {
-        let formatter = QuantityFormatter()
-        formatter.setPreferredNumberFormatter(for: glucoseUnit)
-        return formatter
-    }()
-    
-    private lazy var dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .long
-        formatter.timeStyle = .long
-        formatter.doesRelativeDateFormatting = true
-        return formatter
-    }()
-    
-    public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    override public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch Section(rawValue: indexPath.section)! {
         case .latestReading:
             let cell = tableView.dequeueReusableCell(withIdentifier: SettingsTableViewCell.className, for: indexPath) as! SettingsTableViewCell
@@ -141,7 +109,7 @@ public class xDripClientSettingsViewController: UITableViewController {
         }
     }
     
-    public override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    override public func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch Section(rawValue: section)! {
         case .latestReading:
             return LocalizedString("Latest Reading", comment: "Section title for latest glucose reading")
@@ -150,7 +118,7 @@ public class xDripClientSettingsViewController: UITableViewController {
         }
     }
     
-    public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    override public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch Section(rawValue: indexPath.section)! {
         case .latestReading:
             tableView.deselectRow(at: indexPath, animated: true)
@@ -168,8 +136,48 @@ public class xDripClientSettingsViewController: UITableViewController {
             }
         }
     }
-}
 
+    // MARK: Internal
+
+    @objc func doneTapped(_ sender: Any) {
+        complete()
+    }
+
+    // MARK: Private
+
+    // MARK: - UITableViewDataSource
+    
+    private enum Section: Int, CaseIterable {
+        case latestReading
+        case delete
+    }
+    
+    private enum LatestReadingRow: Int, CaseIterable {
+        case glucose
+        case date
+        case trend
+    }
+
+    private lazy var glucoseFormatter: QuantityFormatter = {
+        let formatter = QuantityFormatter()
+        formatter.setPreferredNumberFormatter(for: glucoseUnit)
+        return formatter
+    }()
+    
+    private lazy var dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .long
+        formatter.timeStyle = .long
+        formatter.doesRelativeDateFormatting = true
+        return formatter
+    }()
+
+    private func complete() {
+        if let nav = navigationController as? SettingsNavigationViewController {
+            nav.notifyComplete()
+        }
+    }
+}
 
 private extension UIAlertController {
     convenience init(cgmDeletionHandler handler: @escaping () -> Void) {
@@ -182,9 +190,9 @@ private extension UIAlertController {
         addAction(UIAlertAction(
             title: LocalizedString("Delete CGM", comment: "Button title to delete CGM"),
             style: .destructive,
-            handler: { (_) in
+            handler: { _ in
                 handler()
-        }
+            }
         ))
         
         let cancel = LocalizedString("Cancel", comment: "The title of the cancel action in an action sheet")

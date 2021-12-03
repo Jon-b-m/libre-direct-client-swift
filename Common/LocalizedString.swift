@@ -8,6 +8,8 @@
 
 import Foundation
 
+// MARK: - FrameworkBundle
+
 internal class FrameworkBundle {
     static let main = Bundle(for: FrameworkBundle.self)
 }

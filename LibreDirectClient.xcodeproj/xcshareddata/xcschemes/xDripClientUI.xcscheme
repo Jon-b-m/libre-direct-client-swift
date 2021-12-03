@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "432B0E871CDFC3C50045347B"
-               BuildableName = "xDripClient.framework"
-               BlueprintName = "xDripClient"
-               ReferencedContainer = "container:xDripClient.xcodeproj">
+               BlueprintIdentifier = "43A8EC81210E664300A81379"
+               BuildableName = "LibreDirectClientUI.framework"
+               BlueprintName = "LibreDirectClientUI"
+               ReferencedContainer = "container:LibreDirectClient.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -50,10 +50,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "432B0E871CDFC3C50045347B"
-            BuildableName = "xDripClient.framework"
-            BlueprintName = "xDripClient"
-            ReferencedContainer = "container:xDripClient.xcodeproj">
+            BlueprintIdentifier = "43A8EC81210E664300A81379"
+            BuildableName = "LibreDirectClientUI.framework"
+            BlueprintName = "LibreDirectClientUI"
+            ReferencedContainer = "container:LibreDirectClient.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

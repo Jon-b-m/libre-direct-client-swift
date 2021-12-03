@@ -1,3 +1,5 @@
+// MARK: - KalmanInput
+
 public protocol KalmanInput {
     var transposed: Self { get }
     var inversed: Self { get }
@@ -7,6 +9,8 @@ public protocol KalmanInput {
     static func - (lhs: Self, rhs: Self) -> Self
     static func * (lhs: Self, rhs: Self) -> Self
 }
+
+// MARK: - KalmanFilterType
 
 public protocol KalmanFilterType {
     associatedtype Input: KalmanInput

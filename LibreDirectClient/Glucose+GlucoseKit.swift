@@ -10,12 +10,16 @@ import Foundation
 import HealthKit
 import LoopKit
 
+// MARK: - Glucose
+
 public struct Glucose {
     public var glucose: UInt16
     public let trend: UInt8
     public let timestamp: Date
     public let collector: String?
 }
+
+// MARK: GlucoseValue
 
 extension Glucose: GlucoseValue {
     public var startDate: Date {
@@ -27,10 +31,11 @@ extension Glucose: GlucoseValue {
     }
 }
 
+// MARK: SensorDisplayable
 
 extension Glucose: SensorDisplayable {
     public var isStateValid: Bool {
-        return ( ( glucose >= 39 ) && ( glucose <= 500 ) )
+        return ((glucose >= 39) && (glucose <= 500))
     }
 
     public var trendType: GlucoseTrend? {
@@ -42,8 +47,8 @@ extension Glucose: SensorDisplayable {
     }
 }
 
-extension SensorDisplayable {
-    public var stateDescription: String {
+public extension SensorDisplayable {
+    var stateDescription: String {
         if isStateValid {
             return LocalizedString("OK", comment: "Sensor state description for the valid state")
         } else {

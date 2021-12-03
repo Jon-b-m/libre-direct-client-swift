@@ -2,16 +2,20 @@
  Conventional Kalman Filter
  */
 public struct KalmanFilter<Type: KalmanInput>: KalmanFilterType {
-    /// x̂_k|k-1
-    public let stateEstimatePrior: Type
-    /// P_k|k-1
-    public let errorCovariancePrior: Type
-    
+    // MARK: Lifecycle
+
     public init(stateEstimatePrior: Type, errorCovariancePrior: Type) {
         self.stateEstimatePrior = stateEstimatePrior
         self.errorCovariancePrior = errorCovariancePrior
     }
-    
+
+    // MARK: Public
+
+    /// x̂_k|k-1
+    public let stateEstimatePrior: Type
+    /// P_k|k-1
+    public let errorCovariancePrior: Type
+
     /**
      Predict step in Kalman filter.
      

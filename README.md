@@ -28,23 +28,23 @@
 
 <h1>Add xDrip as a CGM source to Loop in Xcode</h1>
 <p>Open up your Loop folder and open the Loop project. In the project manager pane on the lefthand side of your screen, navigate into Loop &gt; Managers &gt; CGMManager.swift.</p>
-<p>At the top of the file, you'll see a bunch of frameworks being imported via the declaration <code>import LoopKit</code>, or <code>import ShareClient</code>. We also want to import something : the xDrip client. Click at the end of the last framework being imported, hit enter, and type <code>import xDripClient</code>.</p>
-<p>A little further down you'll notice the constant <code>allCGMManagers</code> being declared, with the required syntax being <code>CGMManager.Type</code>. Add xDrip to the list by typing : <code>xDripClientManager.self</code>.</p>
+<p>At the top of the file, you'll see a bunch of frameworks being imported via the declaration <code>import LoopKit</code>, or <code>import ShareClient</code>. We also want to import something : the xDrip client. Click at the end of the last framework being imported, hit enter, and type <code>import LibreDirectClient</code>.</p>
+<p>A little further down you'll notice the constant <code>allCGMManagers</code> being declared, with the required syntax being <code>CGMManager.Type</code>. Add xDrip to the list by typing : <code>LibreDirectClientManager.self</code>.</p>
 
 <h1>Add the xDrip frameworks</h1>
 <p>Time to use the xDrip frameworks that Carthage went and got for us.</p>
 <p>At the top of the project manager pane you'll see "Loop" with the app icon symbol next to it, under TARGETS. Click on that. Along the top of the screen, right under the name of the project, you'll see a range of tabs listed horizontally, such as "General", "Capabilities", "Resource tags"... Find "Build Phases" and click on it. You'll see a list of options appear. Near the bottom you'll see "Copy Frameworks with Carthage". Click on that.</p>
 <p>Under "Input Files", you'll see a bunch of things that start with <code>$(BUILT_PRODUCTS_DIR)</code>. All of those files are the frameworks that we asked Carthage to get. We're going to add the xDrip client and its UI onto the list, so that Loop can access the files while it's building and running.</p>
 <p>Click on the <code>+</code> and type :</p>
-<p><code>$(BUILT_PRODUCTS_DIR)/xDripClient.framework/xDripClient</code><br><code>$(BUILT_PRODUCTS_DIR)/xDripClientUI.framework/xDripClientUI</code></p>
+<p><code>$(BUILT_PRODUCTS_DIR)/LibreDirectClient.framework/LibreDirectClient</code><br><code>$(BUILT_PRODUCTS_DIR)/LibreDirectClientUI.framework/LibreDirectClientUI</code></p>
 <p>Now do the same under "Output Files", click on the <code>+</code> and type :</p>
-<p><code>$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/xDripClient.framework</code><br>
-<code>$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/xDripClientUI.framework</code></p>
+<p><code>$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/LibreDirectClient.framework</code><br>
+<code>$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/LibreDirectClientUI.framework</code></p>
 
 <h1>Link binaries</h1>
 <p>We've added a reference into the CGM manager, added a reference to the frameworks, now all we have left is to link the files themselves into Loop.</p>
-<p>Under that same "Build Phases" tab you'll also see "Link Binary With Libraries". Click on that, and scroll down to the <code>+</code> button. You'll be asked to select the files. We're looking for that same <code>xDripClient.framework</code> and <code>xDripClientUI.framework</code> we just referenced in the last step.</p>
-<p>Click <code>Add other...</code> and navigate into your Loop folder. Go into Carthage &gt; Build &gt; iOS and scroll all the way down until you find the <code>xDripClient.framework</code> and the <code>xDripClientUI.framework</code>. Select the <code>.framework</code>, not the <code>.framework.dSYM</code>. We want the one whose icon kind of looks like a Lego.</p>
+<p>Under that same "Build Phases" tab you'll also see "Link Binary With Libraries". Click on that, and scroll down to the <code>+</code> button. You'll be asked to select the files. We're looking for that same <code>LibreDirectClient.framework</code> and <code>LibreDirectClientUI.framework</code> we just referenced in the last step.</p>
+<p>Click <code>Add other...</code> and navigate into your Loop folder. Go into Carthage &gt; Build &gt; iOS and scroll all the way down until you find the <code>LibreDirectClient.framework</code> and the <code>LibreDirectClientUI.framework</code>. Select the <code>.framework</code>, not the <code>.framework.dSYM</code>. We want the one whose icon kind of looks like a Lego.</p>
 
 <h1>Build and launch</h1>
 <p>Yes, <em>finally</em> build and launch! Assign all your targets, select your phone in the active scheme, make sure your screen is left on, and hit play.</p>
