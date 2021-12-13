@@ -25,7 +25,7 @@ public class LibreDirectClientManager: CGMManager {
     // MARK: Public
 
     public static var managerIdentifier = "LibreDirectClient"
-    public static let localizedTitle = LocalizedString("Glukose Direct", comment: "Title for the CGMManager option")
+    public static let localizedTitle = LocalizedString("Glucose Direct", comment: "Title for the CGMManager option")
 
     public var useFilter = true
     public var client: LibreDirectClient?
