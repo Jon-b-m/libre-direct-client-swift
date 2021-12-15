@@ -1,1 +1,1 @@
-Renamed edited version of the original xdrip-client-swift (https://github.com/Jon-b-m/xdrip-client-swift.git) for integration of Glucose Direct App (https://github.com/creepymonster/GlucoseDirectApp.git with FreeAPS.
+Renamed edited version of the original xdrip-client-swift (https://github.com/alekst1d/xdrip-client-swift.git) for integration of Glucose Direct App (https://github.com/creepymonster/GlucoseDirectApp.git with FreeAPS.
