@@ -59,10 +59,10 @@ public class LibreDirectClient {
                     collector = _col
                 }
                 
-                if let glucose = sgv["Value"] as? Int, let trend = sgv["Trend"] as? Int, let dt = sgv["DT"] as? String {
+                if let glucose = sgv["Value"] as? Int, let trend = sgv["Trend"] as? Int, let dt = sgv["DT"] as? String, let from = sgv["from"] as? String {
                     // only add glucose readings in a valid range - skip unrealistically low or high readings
                     // this does also prevent negative glucose values from being cast to UInt16
-                    if glucose >= 39, glucose <= 500 {
+                    if glucose >= 39, glucose <= 500, from == "GlucoseDirect" {
                         transformed.append(Glucose(
                             glucose: UInt16(glucose),
                             trend: UInt8(trend),
