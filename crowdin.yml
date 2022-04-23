@@ -1,0 +1,3 @@
+files:
+  - source: /LibreDirectClient/Base.lproj/Localizable.strings
+    translation: /LibreDirectClient/%osx_locale%.lproj/Localizable.strings
